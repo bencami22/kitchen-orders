@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package protos.restaurant;
+
+import "restaurant.proto";
+
+option csharp_namespace = "KitchenOrders";
+
+service Waiter {
+  rpc Order(OrderRequest) returns (OrderReply);
+  rpc GetOrders(GetOrdersRequest) returns (stream OrderReply);
+}

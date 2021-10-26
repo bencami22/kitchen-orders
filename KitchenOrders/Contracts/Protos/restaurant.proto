@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package protos.restaurant;
+
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "KitchenOrders";
+
+message OrderRequest {
+  string product_id = 1;
+  int32 quantity = 2;
+}
+
+message OrderReply {
+  bool success = 1;
+  string error_message = 2;
+  string order_id = 3;
+  google.protobuf.Timestamp order_created = 4;
+}
+
+message GetOrdersRequest {
+  int32 limit = 1;
+}
