@@ -16,9 +16,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 BootstrapServers = config.BootstrapServers, ClientId = Environment.MachineName
             };
 
-            using var schemaRegistry =
+            var schemaRegistry =
                 new CachedSchemaRegistryClient(new SchemaRegistryConfig {Url = config.SchemaRegistryUrl});
-            using var producer = new ProducerBuilder<Null, KitchenOrders.Messages.Order>(producerConfig)
+            var producer = new ProducerBuilder<Null, KitchenOrders.Messages.Order>(producerConfig)
                 .SetValueSerializer(new AvroSerializer<KitchenOrders.Messages.Order>(schemaRegistry))
                 .Build();
             services.AddSingleton(producer);

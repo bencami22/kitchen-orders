@@ -23,7 +23,7 @@ namespace KitchenOrders.Services
         {
             _logger.LogInformation("Triggered: Order");
 
-            var success = new Random().Next(1, 2) % 2 == 0;
+            var success = new Random().Next(2) % 2 == 0;
 
             var orderReply = new OrderReply
             {
@@ -33,15 +33,20 @@ namespace KitchenOrders.Services
             };
             if (success)
             {
-                await _orderProducer.ProduceAsync("orders",
-                    new Message<Null, KitchenOrders.Messages.Order>
+                var deliveryReport = await _orderProducer.ProduceAsync("orders",
+                    new Message<Null, Order>
                     {
-                        Value = new KitchenOrders.Messages.Order
+                        Value = new()
                         {
-                            orderId = orderReply.OrderId,
-                            orderCreated = orderReply.OrderCreated.ToDateTimeOffset().ToUnixTimeMilliseconds()
+                            orderId = "orderReply.OrderId",
+                            orderCreated = 123 //orderReply.OrderCreated.ToDateTimeOffset().ToUnixTimeMilliseconds()
                         }
                     });
+
+                if (deliveryReport.Status != PersistenceStatus.Persisted)
+                {
+                    _logger.LogWarning("Kafka didn't persist");
+                }
             }
 
             return orderReply;
