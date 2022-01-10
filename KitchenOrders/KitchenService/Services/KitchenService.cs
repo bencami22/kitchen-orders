@@ -1,72 +1,65 @@
-using System;
-using System.Threading.Tasks;
-using Confluent.Kafka;
-using Grpc.Core;
-using KitchenOrders.Messages;
-using Microsoft.Extensions.Logging;
 using Timestamp = Google.Protobuf.WellKnownTypes.Timestamp;
 
-namespace KitchenOrders.Services
+namespace KitchenService.Services;
+
+public class KitchenService : Kitchen.KitchenBase
 {
-    public class KitchenService : Kitchen.KitchenBase
+    private readonly ILogger<KitchenService> _logger;
+    private readonly IProducer<Null, Order> _orderProducer;
+
+    public KitchenService(ILogger<KitchenService> logger, IProducer<Null, Order> orderProducer)
     {
-        private readonly ILogger<KitchenService> _logger;
-        private readonly IProducer<Null, Order> _orderProducer;
+        _logger = logger;
+        _orderProducer = orderProducer;
+    }
 
-        public KitchenService(ILogger<KitchenService> logger, IProducer<Null, Order> orderProducer)
+    public override async Task<OrderReply> Order(OrderRequest request, ServerCallContext context)
+    {
+        _logger.LogInformation("Triggered: Order");
+
+        var success = new Random().Next(2) % 2 == 0;
+
+        var orderReply = new OrderReply
         {
-            _logger = logger;
-            _orderProducer = orderProducer;
-        }
+            Success = success,
+            OrderId = Guid.NewGuid().ToString(),
+            OrderCreated = Timestamp.FromDateTime(DateTime.UtcNow)
+        };
 
-        public override async Task<OrderReply> Order(OrderRequest request, ServerCallContext context)
-        {
-            _logger.LogInformation("Triggered: Order");
+        if (!success) return orderReply;
 
-            var success = new Random().Next(2) % 2 == 0;
-
-            var orderReply = new OrderReply
+        var deliveryReport = await _orderProducer.ProduceAsync("order.created",
+            new Message<Null, Order>
             {
-                Success = success,
-                OrderId = Guid.NewGuid().ToString(),
-                OrderCreated = Timestamp.FromDateTime(DateTime.UtcNow)
-            };
-            if (success)
-            {
-                var deliveryReport = await _orderProducer.ProduceAsync("orders",
-                    new Message<Null, Order>
-                    {
-                        Value = new()
-                        {
-                            orderId = "orderReply.OrderId",
-                            orderCreated = 123 //orderReply.OrderCreated.ToDateTimeOffset().ToUnixTimeMilliseconds()
-                        }
-                    });
-
-                if (deliveryReport.Status != PersistenceStatus.Persisted)
+                Value = new()
                 {
-                    _logger.LogWarning("Kafka didn't persist");
+                    orderId = orderReply.OrderId,
+                    orderCreated = orderReply.OrderCreated.ToDateTimeOffset().ToUnixTimeMilliseconds()
                 }
-            }
+            });
 
-            return orderReply;
+        if (deliveryReport.Status != PersistenceStatus.Persisted)
+        {
+            _logger.LogWarning("Kafka didn't persist");
         }
 
-        public override async Task GetOrders(GetOrdersRequest request,
-            Grpc.Core.IServerStreamWriter<OrderReply> responseStream,
-            Grpc.Core.ServerCallContext context)
-        {
-            _logger.LogInformation("Triggered: Order");
-            var orders = new[]
-            {
-                new OrderReply {Success = true, OrderId = Guid.NewGuid().ToString()},
-                new OrderReply {Success = true, OrderId = Guid.NewGuid().ToString()}
-            };
+        return orderReply;
+    }
 
-            foreach (var response in orders)
-            {
-                await responseStream.WriteAsync(response);
-            }
+    public override async Task GetOrders(GetOrdersRequest request,
+        Grpc.Core.IServerStreamWriter<OrderReply> responseStream,
+        Grpc.Core.ServerCallContext context)
+    {
+        _logger.LogInformation("Triggered: Order");
+        var orders = new[]
+        {
+            new OrderReply {Success = true, OrderId = Guid.NewGuid().ToString()},
+            new OrderReply {Success = true, OrderId = Guid.NewGuid().ToString()}
+        };
+
+        foreach (var response in orders)
+        {
+            await responseStream.WriteAsync(response);
         }
     }
 }

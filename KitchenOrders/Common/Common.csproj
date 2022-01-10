@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Confluent.Kafka" Version="1.8.2" />
+      <PackageReference Include="Confluent.SchemaRegistry" Version="1.8.2" />
+      <PackageReference Include="Confluent.SchemaRegistry.Serdes.Avro" Version="1.8.2" />
+      <PackageReference Include="Google.Protobuf" Version="3.19.2" />
+      <PackageReference Include="Grpc.Tools" Version="2.43.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+      <PackageReference Include="Grpc.Core" Version="2.43.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\Contracts\Protos\kitchen.proto">
+        <Link>Protos\kitchen.proto</Link>
+      </Content>
+      <Content Include="..\Contracts\Protos\restaurant.proto">
+        <Link>Protos\restaurant.proto</Link>
+      </Content>
+      <Content Include="..\Contracts\Protos\waiter.proto">
+        <Link>Protos\waiter.proto</Link>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Protobuf Include="..\Contracts\Protos\waiter.proto" />
+        <Protobuf Include="..\Contracts\Protos\kitchen.proto" />
+        <Protobuf Include="..\Contracts\Protos\restaurant.proto" GrpcServices="Server" />
+    </ItemGroup>
+
+</Project>

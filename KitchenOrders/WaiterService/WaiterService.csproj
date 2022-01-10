@@ -1,22 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <RootNamespace>KitchenOrders</RootNamespace>
+        <LangVersion>10</LangVersion>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Confluent.Kafka" Version="1.8.2" />
         <PackageReference Include="Google.Protobuf.Tools" Version="3.18.0" />
-        <PackageReference Include="Grpc.AspNetCore" Version="2.39.0" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.41.0" />
+        <PackageReference Include="librdkafka.redist" Version="1.8.2" />
         <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="5.0.1" />
         <PackageReference Include="Polly" Version="7.2.2" />
     </ItemGroup>
 
     <ItemGroup>
-        <Protobuf Include="..\Contracts\Protos\waiter.proto" />
-        <Protobuf Include="..\Contracts\Protos\kitchen.proto" />
-        <Protobuf Include="..\Contracts\Protos\restaurant.proto" GrpcServices="Server" />
+      <ProjectReference Include="..\Common\Common.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,5 +1,4 @@
-﻿using Confluent.Kafka;
-using KitchenService.Kafka;
+﻿using Common.Kafka;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -17,15 +16,16 @@ namespace KitchenService
         {
             Configuration = configuration;
         }
-        
+
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
+            
             var kafkaOptions = new KafkaOptions();
             Configuration.Bind("Kafka", kafkaOptions);
-            
+
             services.AddProducer<Null, KitchenOrders.Messages.Order>(kafkaOptions);
         }
 
@@ -41,7 +41,7 @@ namespace KitchenService
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<KitchenOrders.Services.KitchenService>();
+                endpoints.MapGrpcService<Services.KitchenService>();
 
                 endpoints.MapGet("/",
                     async context =>
