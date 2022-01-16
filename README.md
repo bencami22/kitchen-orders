@@ -1,5 +1,8 @@
 # Restaurant (kitchen orders)
+
 Playground app utilizing .NET 6, GRPC, Apache Kafka, Apache Avro, KSQLDB.
+
+<img width="1361" alt="Screenshot 2022-01-16 at 21 49 21" src="https://user-images.githubusercontent.com/26182143/149677636-3f5b846c-a8da-48d7-bc03-f0f8a140eb30.png">
 
 Consisting of 2 hosted services, `Waiter` and `Kitchen`, mimicking a real life restaurant. 
 
