@@ -58,10 +58,18 @@ public class KitchenService : Kitchen.KitchenBase
        
         var result = _kSqlDbContext.CreatePullQuery<Order>("orders")
             .Where(c =>true)
+            .Select(x=>x)
             .GetManyAsync();
-        
+
+        var currentCount = 0;
         await foreach (var response in result)
         {
+            if (currentCount > request.Limit)
+            {
+                break;
+            }
+            currentCount++;
+            
             await responseStream.WriteAsync(new OrderReply
             {
                 Success = true,
