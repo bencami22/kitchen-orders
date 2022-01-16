@@ -12,6 +12,7 @@
         <PackageReference Include="Confluent.SchemaRegistry.Serdes.Avro" Version="1.8.2" />
         <PackageReference Include="Grpc.AspNetCore" Version="2.41.0" />
         <PackageReference Include="Grpc.Core" Version="2.43.0" />
+        <PackageReference Include="ksqlDb.RestApi.Client" Version="1.5.0" />
     </ItemGroup>
 
     <ItemGroup>

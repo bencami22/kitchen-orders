@@ -1,4 +1,5 @@
 ﻿using Common.Kafka;
+using ksqlDb.RestApi.Client.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -27,6 +28,8 @@ namespace KitchenService
             Configuration.Bind("Kafka", kafkaOptions);
 
             services.AddProducer<Null, KitchenOrders.Messages.Order>(kafkaOptions);
+            
+            services.ConfigureKSqlDb(kafkaOptions.KSqlDbUrl);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,7 +41,7 @@ namespace KitchenService
             }
 
             app.UseRouting();
-
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<Services.KitchenService>();

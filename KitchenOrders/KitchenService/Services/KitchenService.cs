@@ -1,3 +1,5 @@
+using ksqlDB.RestApi.Client.KSql.Linq.PullQueries;
+using ksqlDB.RestApi.Client.KSql.Query.Context;
 using Timestamp = Google.Protobuf.WellKnownTypes.Timestamp;
 
 namespace KitchenService.Services;
@@ -6,11 +8,13 @@ public class KitchenService : Kitchen.KitchenBase
 {
     private readonly ILogger<KitchenService> _logger;
     private readonly IProducer<Null, Order> _orderProducer;
-
-    public KitchenService(ILogger<KitchenService> logger, IProducer<Null, Order> orderProducer)
+    private readonly IKSqlDBContext _kSqlDbContext;
+    
+    public KitchenService(ILogger<KitchenService> logger, IProducer<Null, Order> orderProducer, IKSqlDBContext kSqlDbContextcontext)
     {
         _logger = logger;
         _orderProducer = orderProducer;
+        _kSqlDbContext = kSqlDbContextcontext;
     }
 
     public override async Task<OrderReply> Order(OrderRequest request, ServerCallContext context)
@@ -51,15 +55,19 @@ public class KitchenService : Kitchen.KitchenBase
         Grpc.Core.ServerCallContext context)
     {
         _logger.LogInformation("Triggered: Order");
-        var orders = new[]
+       
+        var result = _kSqlDbContext.CreatePullQuery<Order>("orders")
+            .Where(c =>true)
+            .GetManyAsync();
+        
+        await foreach (var response in result)
         {
-            new OrderReply {Success = true, OrderId = Guid.NewGuid().ToString()},
-            new OrderReply {Success = true, OrderId = Guid.NewGuid().ToString()}
-        };
-
-        foreach (var response in orders)
-        {
-            await responseStream.WriteAsync(response);
+            await responseStream.WriteAsync(new OrderReply
+            {
+                Success = true,
+                OrderId = response.orderId,
+                OrderCreated = Timestamp.FromDateTimeOffset(DateTimeOffset.FromUnixTimeMilliseconds(response.orderCreated))
+            });
         }
     }
 }
