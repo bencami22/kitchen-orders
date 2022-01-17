@@ -25,7 +25,7 @@ docker compose up -d
 
 
 ### Schema Regsitry (avro) setup
-Register the `order` schema.
+Register the `order` schema (may not be necessarily due to auto create).
 ```sh
 curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" \
   --data '{"schema":"{\"type\":\"record\",\"name\":\"Order\",\"doc\":\"Represents a successfully created kitchen order.\",\"namespace\":\"KitchenOrders.Messages\",\"fields\":[{\"name\":\"orderId\",\"type\":\"string\"},{\"name\":\"orderCreated\",\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}]}"}' \
