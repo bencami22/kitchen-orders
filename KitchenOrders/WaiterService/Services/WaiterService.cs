@@ -1,6 +1,7 @@
 using Grpc.Net.Client;
+using KitchenOrders;
 
-namespace KitchenOrders.Services;
+namespace WaiterService.Services;
 
 public class WaiterService : Waiter.WaiterBase
 {

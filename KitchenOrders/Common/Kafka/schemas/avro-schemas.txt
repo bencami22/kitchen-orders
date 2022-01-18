@@ -1,3 +1,0 @@
-
-// Register new schema to the schema regsitry
-curl -vs --stderr - -XPOST -i -H "Content-Type: application/vnd.schemaregistry.v1+json" --data '{"schema":"{\"type\":\"record\",\"name\":\"Order\",\"doc\":\"Represents a successfully created kitchen order.\",\"namespace\":\"KitchenOrders.Messages\",\"fields\":[{\"name\":\"orderId\",\"type\":\"string\"},{\"name\":\"orderCreated\",\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}]}"}' /api/schema-registry/subjects/orders/versions

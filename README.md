@@ -46,10 +46,24 @@ ksql http://ksqldb-server:8088
 ```
 then
 
+Create stream with will contain the individual immutable messages from the kafka topic.
+
 ```sql
-CREATE STREAM orders (orderId VARCHAR, orderCreated BIGINT) WITH (kafka_topic='order.created', value_format='avro', partitions=1);
+CREATE STREAM orders (orderId VARCHAR, orderCreated BIGINT, productId VARCHAR, quantity INT) WITH (kafka_topic='order.created', value_format='avro', partitions=1);
 ```
 
+Create a materialised view/cache with will contain an aggregation of product/orders. Processing (aggregation) happens on each stream entry for faster querying.
+
+```sql
+CREATE TABLE product_orders AS
+   SELECT productId,
+          count_distinct(orderId) as noOfOrders,
+          count_distinct(orderId) * SUM(quantity) AS totalQuantity,
+          latest_by_offset(orderId) AS lastOrderId
+    FROM orders
+    GROUP BY productId
+    EMIT CHANGES;
+```
 ### Run services
 
 Terminal #1
@@ -62,4 +76,16 @@ Terminal #2
 ```sh
 cd KitchenOrders/KitchenService/      
 dotnet run
+```
+
+
+## Avro
+
+To create C# class from avro schema file:
+```sh
+dotnet tool install --global Apache.Avro.Tools --version 1.11.0
+```
+
+```sh
+avrogen -s Order.avsc .
 ```

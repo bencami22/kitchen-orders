@@ -20,14 +20,15 @@ public class ChitService
                 {
                     var consumeResult = orderConsumer.Consume(TimeSpan.FromMilliseconds(1000));
 
-                    if (consumeResult != null)
-                    {
-                        logger.LogInformation("Consumer a kafka message: {@Message}", consumeResult);
+                    if (consumeResult == null) continue;
+                    
+                    logger.LogInformation("Consumer a kafka message: {@Message}", consumeResult);
 
-                        Console.WriteLine("New order created:" +
-                                          $"Id:{consumeResult?.Message.Value.orderId}" +
-                                          $"Created At:{consumeResult?.Message.Value.orderCreated}");
-                    }
+                    Console.WriteLine("New order created:" +
+                                      $"Id:{consumeResult?.Message.Value.orderId}" +
+                                      $"Created At:{consumeResult?.Message.Value.orderCreated}" +
+                                      $"ProductId:{consumeResult?.Message.Value.productId}" +
+                                      $"Quantity:{consumeResult?.Message.Value.quantity}");
                 }
             }
             catch (Exception ex)

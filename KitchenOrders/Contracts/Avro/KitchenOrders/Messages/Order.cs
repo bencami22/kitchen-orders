@@ -4,7 +4,6 @@
 //    Changes to this file may cause incorrect behavior and will be lost if code
 //    is regenerated
 // </auto-generated>
-// avrogen -s Orders.3.avsc .
 // ------------------------------------------------------------------------------
 namespace KitchenOrders.Messages
 {
@@ -19,11 +18,11 @@ namespace KitchenOrders.Messages
 	/// </summary>
 	public partial class Order : ISpecificRecord
 	{
-		public static Schema _SCHEMA = Avro.Schema.Parse("{\"type\":\"record\",\"name\":\"Order\",\"doc\":\"Represents a successfully created kitchen " +
-				"order.\",\"namespace\":\"KitchenOrders.Messages\",\"fields\":[{\"name\":\"orderId\",\"type\":" +
-				"\"string\"},{\"name\":\"orderCreated\",\"type\":\"long\"}]}");
+		public static Schema _SCHEMA = Avro.Schema.Parse(@"{""type"":""record"",""name"":""Order"",""doc"":""Represents a successfully created kitchen order."",""namespace"":""KitchenOrders.Messages"",""fields"":[{""name"":""orderId"",""type"":""string""},{""name"":""orderCreated"",""type"":""long""},{""name"":""productId"",""type"":""string""},{""name"":""quantity"",""type"":""int""}]}");
 		private string _orderId;
 		private long _orderCreated;
+		private string _productId;
+		private int _quantity;
 		public virtual Schema Schema
 		{
 			get
@@ -53,12 +52,36 @@ namespace KitchenOrders.Messages
 				this._orderCreated = value;
 			}
 		}
+		public string productId
+		{
+			get
+			{
+				return this._productId;
+			}
+			set
+			{
+				this._productId = value;
+			}
+		}
+		public int quantity
+		{
+			get
+			{
+				return this._quantity;
+			}
+			set
+			{
+				this._quantity = value;
+			}
+		}
 		public virtual object Get(int fieldPos)
 		{
 			switch (fieldPos)
 			{
 			case 0: return this.orderId;
 			case 1: return this.orderCreated;
+			case 2: return this.productId;
+			case 3: return this.quantity;
 			default: throw new AvroRuntimeException("Bad index " + fieldPos + " in Get()");
 			};
 		}
@@ -68,6 +91,8 @@ namespace KitchenOrders.Messages
 			{
 			case 0: this.orderId = (System.String)fieldValue; break;
 			case 1: this.orderCreated = (System.Int64)fieldValue; break;
+			case 2: this.productId = (System.String)fieldValue; break;
+			case 3: this.quantity = (System.Int32)fieldValue; break;
 			default: throw new AvroRuntimeException("Bad index " + fieldPos + " in Put()");
 			};
 		}

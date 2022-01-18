@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using Common.Kafka;
 using Confluent.Kafka;
+using KitchenOrders.Messages;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -8,7 +9,6 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using WaiterService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -26,7 +26,7 @@ builder.Services.AddGrpc();
 var kafkaOptions = new KafkaOptions();
 builder.Configuration.Bind("Kafka", kafkaOptions);
             
-builder.Services.AddConsumer<Null, KitchenOrders.Messages.Order>(kafkaOptions, "Solo group");
+builder.Services.AddConsumer<Null, Order>(kafkaOptions, "Solo group");
 
 builder.Services.AddSingleton<ChitService>();
 
@@ -41,7 +41,7 @@ app.UseRouting();
 
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapGrpcService<KitchenOrders.Services.WaiterService>();
+    endpoints.MapGrpcService<WaiterService.Services.WaiterService>();
 
     endpoints.MapGet("/",
         async context =>

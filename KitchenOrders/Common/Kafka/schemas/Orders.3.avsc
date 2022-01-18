@@ -1,1 +1,0 @@
-{"type":"record","name":"Order","namespace":"KitchenOrders.Messages","doc":"Represents a successfully created kitchen order.","fields":[{"name":"orderId","type":"string"},{"name":"orderCreated","type":"long","logicalType":"timestamp-millis"}]}

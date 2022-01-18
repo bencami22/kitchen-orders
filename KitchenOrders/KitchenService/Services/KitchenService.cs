@@ -1,4 +1,3 @@
-using ksqlDB.RestApi.Client.KSql.Linq.PullQueries;
 using ksqlDB.RestApi.Client.KSql.Query.Context;
 using Timestamp = Google.Protobuf.WellKnownTypes.Timestamp;
 
@@ -38,7 +37,9 @@ public class KitchenService : Kitchen.KitchenBase
                 Value = new()
                 {
                     orderId = orderReply.OrderId,
-                    orderCreated = orderReply.OrderCreated.ToDateTimeOffset().ToUnixTimeMilliseconds()
+                    orderCreated = orderReply.OrderCreated.ToDateTimeOffset().ToUnixTimeMilliseconds(),
+                    productId = request.ProductId,
+                    quantity = request.Quantity
                 }
             });
 
@@ -54,9 +55,13 @@ public class KitchenService : Kitchen.KitchenBase
         Grpc.Core.IServerStreamWriter<OrderReply> responseStream,
         Grpc.Core.ServerCallContext context)
     {
-        _logger.LogInformation("Triggered: Order");
-       
-        var result = _kSqlDbContext.CreatePullQuery<Order>("orders")
+        _logger.LogInformation("Triggered: GetOrders");
+
+        var stats = await _kSqlDbContext.ExecutePullQuery<ProductOrderStats>("SElECT productId, noOfOrders, totalQuantity, lastOrderId FROM product_orders;");
+        _logger.LogInformation("Only displaying this as a log: {@Stats}",stats.ToString());
+        
+        var result = _kSqlDbContext
+            .CreatePullQuery<Order>("orders")
             .GetManyAsync();
 
         var currentCount = 0;
@@ -64,6 +69,7 @@ public class KitchenService : Kitchen.KitchenBase
         {
             if (currentCount >= request.Limit)
             {
+                // Pull queries don't support LIMIT clauses. See https://cnfl.io/queries for more info.
                 break;
             }
 

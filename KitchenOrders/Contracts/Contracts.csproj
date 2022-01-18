@@ -33,4 +33,8 @@
       </Protobuf>
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Apache.Avro" Version="1.10.2" />
+    </ItemGroup>
+
 </Project>
